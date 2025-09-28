@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Galería · AJC-crypto/fotos</title>
+  <style>
+    :root{
+      --bg:#0f172a; --fg:#e2e8f0; --muted:#94a3b8; --card:#111827; --accent:#38bdf8; --chip:#1f2937;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Helvetica Neue",Arial;
+    }
+    header{
+      padding:20px 16px; position:sticky; top:0; z-index:10; backdrop-filter:saturate(1.2) blur(8px);
+      background:linear-gradient(180deg, rgba(15,23,42,.95), rgba(15,23,42,.75));
+      border-bottom:1px solid rgba(148,163,184,.15);
+    }
+    .wrap{max-width:1200px; margin:0 auto; padding:0 8px;}
+    h1{margin:0; font-size:20px; font-weight:700; letter-spacing:.2px}
+    .controls{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+    input[type="search"]{
+      flex:1 1 280px; padding:10px 12px; border-radius:12px; border:1px solid rgba(148,163,184,.25); background:#0b1220; color:var(--fg);
+    }
+    button{
+      padding:10px 12px; border-radius:12px; border:1px solid rgba(148,163,184,.25); background:#0b1220; color:var(--fg); cursor:pointer;
+    }
+    button:hover{border-color:var(--accent); color:#fff}
+    .grid{
+      max-width:1200px; margin:18px auto; padding:0 12px;
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px;
+    }
+    .card{
+      background:var(--card); border:1px solid rgba(148,163,184,.15); border-radius:16px; overflow:hidden;
+      display:flex; flex-direction:column; min-height:100px;
+      box-shadow:0 1px 0 rgba(0,0,0,.2), 0 10px 30px rgba(0,0,0,.25);
+    }
+    .thumb{
+      display:block; aspect-ratio:4/3; width:100%; object-fit:cover; background:#0b1220;
+    }
+    .meta{padding:10px 12px; display:flex; gap:8px; align-items:center; justify-content:space-between}
+    .name{font-size:12px; color:var(--fg); word-break:break-word; line-height:1.2}
+    .chips{display:flex; gap:6px}
+    .chip{font-size:11px; padding:4px 8px; background:var(--chip); color:var(--muted); border-radius:999px; border:1px solid rgba(148,163,184,.2)}
+    .copy{display:flex; gap:6px; margin:8px 12px 12px 12px}
+    .copy button{font-size:12px; padding:6px 8px}
+    footer{max-width:1200px; margin:20px auto; color:var(--muted); font-size:12px; text-align:center}
+    a{color:var(--accent); text-decoration:none}
+    .count{color:var(--muted); font-size:12px; margin-left:6px}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Galería de fotos <span class="count" id="count"></span></h1>
+    <div class="controls">
+      <input id="search" type="search" placeholder="Buscar por nombre… (filtra en cliente)">
+      <button id="btnCsv">Descargar CSV de enlaces (RAW)</button>
+      <button id="btnRecargar">Recargar lista</button>
+      <span style="align-self:center; font-size:12px; color:var(--muted)">
+        Repo: <a target="_blank" id="repoLink"></a>
+      </span>
+    </div>
+  </div>
+</header>
+
+<main class="grid" id="grid"></main>
+<footer>Generado en cliente con la API de GitHub. Las imágenes se sirven desde el propio repositorio (Pages) o vía RAW.</footer>
+
+<script>
+// === CONFIG ===
+const owner  = "AJC-crypto";
+const repo   = "fotos";
+const branch = "main";
+const rootPath = ""; // "" = raíz del repo; ej. "img" si están en /img
+const exts = [".jpg",".jpeg",".png",".webp",".gif",".JPG",".JPEG",".PNG",".WEBP",".GIF"];
+
+// Base URLs
+const apiBase   = `https://api.github.com/repos/${owner}/${repo}/contents`;
+const pagesBase = `https://${owner.toLowerCase()}.github.io/${repo}/`; // para servir desde Pages
+const rawBase   = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/`; // para Power BI
+
+document.getElementById("repoLink").textContent = `${owner}/${repo}`;
+document.getElementById("repoLink").href = `https://github.com/${owner}/${repo}`;
+
+// Utilidades
+const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
+function isImg(name){ return exts.some(e => name.endsWith(e)); }
+function buildPagesUrl(path){ return pagesBase + encodeURI(path); }
+function buildRawUrl(path){ return rawBase + encodeURI(path); }
+
+// Descarga CSV de enlaces RAW
+function downloadCSV(rows){
+  let csv = "FileName,RAW_URL\n";
+  for (const r of rows) csv += `"${r.path.replace(/"/g,'""')}","${buildRawUrl(r.path)}"\n`;
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "enlaces_raw_powerbi.csv"; a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function fetchDir(path=""){
+  // Obtiene contenidos de un directorio usando la API; incluye subcarpetas
+  const out = [];
+  const url = `${apiBase}/${path}?ref=${branch}`;
+  const res = await fetch(url, {headers:{"Accept":"application/vnd.github+json"}});
+  if (!res.ok) return out;
+  const items = await res.json();
+  for (const it of items){
+    if (it.type === "file" && isImg(it.name)){
+      out.push({name: it.name, path: path ? `${path}/${it.name}` : it.name});
+    } else if (it.type === "dir"){
+      const sub = await fetchDir(path ? `${path}/${it.name}` : it.name);
+      out.push(...sub);
+    }
+  }
+  return out;
+}
+
+function render(items){
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  const count = document.getElementById("count");
+  count.textContent = `(${items.length} imágenes)`;
+  for (const it of items){
+    const card = document.createElement("div");
+    card.className = "card";
+    const img = document.createElement("img");
+    img.className = "thumb";
+    img.loading = "lazy";
+    img.alt = it.name;
+    // Preferimos Pages (mismo dominio) y RAW como enlace para copiar
+    img.src = buildPagesUrl(it.path);
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    const nm = document.createElement("div");
+    nm.className = "name";
+    nm.textContent = it.name;
+    const chips = document.createElement("div");
+    chips.className = "chips";
+    const chip1 = document.createElement("span"); chip1.className="chip"; chip1.textContent="Pages";
+    const chip2 = document.createElement("span"); chip2.className="chip"; chip2.textContent="RAW";
+    chips.appendChild(chip1); chips.appendChild(chip2);
+    meta.appendChild(nm); meta.appendChild(chips);
+
+    const copy = document.createElement("div");
+    copy.className = "copy";
+    const b1 = document.createElement("button");
+    b1.textContent = "Copiar RAW";
+    b1.onclick = ()=>navigator.clipboard.writeText(buildRawUrl(it.path));
+    const b2 = document.createElement("button");
+    b2.textContent = "Abrir RAW";
+    b2.onclick = ()=>window.open(buildRawUrl(it.path), "_blank");
+    const b3 = document.createElement("button");
+    b3.textContent = "Abrir Pages";
+    b3.onclick = ()=>window.open(buildPagesUrl(it.path), "_blank");
+    copy.append(b1,b2,b3);
+
+    card.append(img, meta, copy);
+    grid.appendChild(card);
+  }
+}
+
+(async function init(){
+  const search = document.getElementById("search");
+  document.getElementById("btnRecargar").onclick = load;
+  let all = [];
+  async function load(){
+    const root = rootPath.replace(/^\/+|\/+$/g,"");
+    all = await fetchDir(root);
+    render(all);
+  }
+  search.addEventListener("input", ()=>{
+    const q = search.value.toLowerCase().trim();
+    const filtered = !q ? all : all.filter(it => it.name.toLowerCase().includes(q));
+    render(filtered);
+  });
+  document.getElementById("btnCsv").onclick = ()=> downloadCSV(all);
+  await load();
+})();
+</script>
+</body>
+</html>
