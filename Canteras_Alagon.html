@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_1f97a72aeff68b2b42c095f5a36ed5f4 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_1f97a72aeff68b2b42c095f5a36ed5f4" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_1f97a72aeff68b2b42c095f5a36ed5f4 = L.map(
+                "map_1f97a72aeff68b2b42c095f5a36ed5f4",
+                {
+                    center: [41.7716, -1.1203],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 10,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+            L.control.scale().addTo(map_1f97a72aeff68b2b42c095f5a36ed5f4);
+
+            
+
+        
+    
+            var tile_layer_cea94bbe69c080d310e8d69c612480bc = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_1f97a72aeff68b2b42c095f5a36ed5f4);
+        
+    
+            var marker_07d3d4c9e359d31d053e8efbf3fe0480 = L.marker(
+                [41.7716, -1.1203],
+                {}
+            ).addTo(map_1f97a72aeff68b2b42c095f5a36ed5f4);
+        
+    
+            var icon_cecb5bb93241092fef59e726576d858d = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "home", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_07d3d4c9e359d31d053e8efbf3fe0480.setIcon(icon_cecb5bb93241092fef59e726576d858d);
+        
+    
+            marker_07d3d4c9e359d31d053e8efbf3fe0480.bindTooltip(
+                `<div>
+                     ZIA / Almacén de residuos – Estación de Alagón
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_6f4771d99a6fb782f5f1335e8a01e0a2 = L.marker(
+                [41.9205, -1.238],
+                {}
+            ).addTo(map_1f97a72aeff68b2b42c095f5a36ed5f4);
+        
+    
+            var icon_c03b89c5254e571601b182e233057f28 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_6f4771d99a6fb782f5f1335e8a01e0a2.setIcon(icon_c03b89c5254e571601b182e233057f28);
+        
+    
+        var popup_3469f13d00c0b9823755f2544400596f = L.popup({"maxWidth": 420});
+
+        
+            var html_c53957d6935dfb3501b1a5760f69c0ac = $(`<div id="html_c53957d6935dfb3501b1a5760f69c0ac" style="width: 100.0%; height: 100.0%;">     <b>Planta RCD Tauste – Tomás Arrieta, S.L.</b><br>     <i>RCD (tratamiento)</i><br>     <b>Municipio:</b> Tauste (Zaragoza)<br>     <b>Distancia a ZIA:</b> 19.2 km<br>     <b>Autorización/Registro:</b> INAGA/500301/01/2023/9745 (Res. 07/05/2025)<br>     <b>NIMA/Código:</b> <br>     <b>Documentación:</b> <a href="https://www.boa.aragon.es/cgi-bin/EBOA/BRSCGI?CMD=VEROBJ&MLKOB=1395952301010" target="_blank">Ver documento</a><br>     <b>Ruta:</b> <a href="https://www.google.com/maps/dir/?api=1&origin=41.7716,-1.1203&destination=41.9205,-1.238&travelmode=driving" target="_blank">Cómo llegar</a><br>     <b>Observaciones:</b> Planta de tratamiento de RCD; polígono 35, parcela 49.     </div>`)[0];
+            popup_3469f13d00c0b9823755f2544400596f.setContent(html_c53957d6935dfb3501b1a5760f69c0ac);
+        
+
+        marker_6f4771d99a6fb782f5f1335e8a01e0a2.bindPopup(popup_3469f13d00c0b9823755f2544400596f)
+        ;
+
+        
+    
+    
+            marker_6f4771d99a6fb782f5f1335e8a01e0a2.bindTooltip(
+                `<div>
+                     Planta RCD Tauste – Tomás Arrieta, S.L.
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_5fb5f5c237d66a92c2c848d0af63f497 = L.marker(
+                [41.67, -0.861],
+                {}
+            ).addTo(map_1f97a72aeff68b2b42c095f5a36ed5f4);
+        
+    
+            var icon_76eb7140db2bfbfb08c37ff5bfdd7cd1 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_5fb5f5c237d66a92c2c848d0af63f497.setIcon(icon_76eb7140db2bfbfb08c37ff5bfdd7cd1);
+        
+    
+        var popup_b67358b01896615d23badc86033d191b = L.popup({"maxWidth": 420});
+
+        
+            var html_647ddf96ff969019bd16de83ae8c7f24 = $(`<div id="html_647ddf96ff969019bd16de83ae8c7f24" style="width: 100.0%; height: 100.0%;">     <b>Grupo Blesa – Gestión RCD Zaragoza</b><br>     <i>RCD (gestor / áridos reciclados)</i><br>     <b>Municipio:</b> Zaragoza<br>     <b>Distancia a ZIA:</b> 24.3 km<br>     <b>Autorización/Registro:</b> Gestor RCD (consulte RPGR Aragón)<br>     <b>NIMA/Código:</b> <br>     <b>Documentación:</b> <a href="https://www.grupoblesa.es/rcds" target="_blank">Ver documento</a><br>     <b>Ruta:</b> <a href="https://www.google.com/maps/dir/?api=1&origin=41.7716,-1.1203&destination=41.67,-0.861&travelmode=driving" target="_blank">Cómo llegar</a><br>     <b>Observaciones:</b> Gestión de RCD no peligrosos; áridos reciclados.     </div>`)[0];
+            popup_b67358b01896615d23badc86033d191b.setContent(html_647ddf96ff969019bd16de83ae8c7f24);
+        
+
+        marker_5fb5f5c237d66a92c2c848d0af63f497.bindPopup(popup_b67358b01896615d23badc86033d191b)
+        ;
+
+        
+    
+    
+            marker_5fb5f5c237d66a92c2c848d0af63f497.bindTooltip(
+                `<div>
+                     Grupo Blesa – Gestión RCD Zaragoza
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_28c6b84d9914d2d00d59e0d94300bdb3 = L.marker(
+                [41.6296, -0.9478],
+                {}
+            ).addTo(map_1f97a72aeff68b2b42c095f5a36ed5f4);
+        
+    
+            var icon_c39fba360b45a2b5d7be0e5c8c4c2d9e = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_28c6b84d9914d2d00d59e0d94300bdb3.setIcon(icon_c39fba360b45a2b5d7be0e5c8c4c2d9e);
+        
+    
+        var popup_35865dc53a58b73a8ad2c2ea2b2e5ae2 = L.popup({"maxWidth": 420});
+
+        
+            var html_ab2dc4114e7b2fe299593df0c9981ba7 = $(`<div id="html_ab2dc4114e7b2fe299593df0c9981ba7" style="width: 100.0%; height: 100.0%;">     <b>ACTECO – Zaragoza</b><br>     <i>Peligrosos / No peligrosos (almacenamiento/transferencia)</i><br>     <b>Municipio:</b> Zaragoza (C/ Osca, 23 – 50197)<br>     <b>Distancia a ZIA:</b> 21.3 km<br>     <b>Autorización/Registro:</b> RPGR Aragón (Instalación autorizada)<br>     <b>NIMA/Código:</b> NIMA 5000056243<br>     <b>Documentación:</b> <a href="https://www.acteco.es/gestion-residuos-peligrosos-zaragoza/" target="_blank">Ver documento</a><br>     <b>Ruta:</b> <a href="https://www.google.com/maps/dir/?api=1&origin=41.7716,-1.1203&destination=41.6296,-0.9478&travelmode=driving" target="_blank">Cómo llegar</a><br>     <b>Observaciones:</b> Gestor con centro en Zaragoza; peligrosos y no peligrosos.     </div>`)[0];
+            popup_35865dc53a58b73a8ad2c2ea2b2e5ae2.setContent(html_ab2dc4114e7b2fe299593df0c9981ba7);
+        
+
+        marker_28c6b84d9914d2d00d59e0d94300bdb3.bindPopup(popup_35865dc53a58b73a8ad2c2ea2b2e5ae2)
+        ;
+
+        
+    
+    
+            marker_28c6b84d9914d2d00d59e0d94300bdb3.bindTooltip(
+                `<div>
+                     ACTECO – Zaragoza
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_426eeeb0a6c827bb91d3475f8da57e70 = L.marker(
+                [41.547, -0.934],
+                {}
+            ).addTo(map_1f97a72aeff68b2b42c095f5a36ed5f4);
+        
+    
+            var icon_5940c60e8c016e66090d8e9eb2ee1263 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "red", "prefix": "glyphicon"}
+            );
+            marker_426eeeb0a6c827bb91d3475f8da57e70.setIcon(icon_5940c60e8c016e66090d8e9eb2ee1263);
+        
+    
+        var popup_35a7a6928ab67024e932d001d58ca6bf = L.popup({"maxWidth": 420});
+
+        
+            var html_475fd62093707bf75fdf4a1bca54c621 = $(`<div id="html_475fd62093707bf75fdf4a1bca54c621" style="width: 100.0%; height: 100.0%;">     <b>FCC Ámbito – Depósito seguridad / planta Aragón</b><br>     <i>Peligrosos (depósito seguridad y gestión)</i><br>     <b>Municipio:</b> Zaragoza / Cadrete<br>     <b>Distancia a ZIA:</b> 29.4 km<br>     <b>Autorización/Registro:</b> Instalación autorizada por Gobierno de Aragón<br>     <b>NIMA/Código:</b> <br>     <b>Documentación:</b> <a href="https://www.fccambito.com/-/fcc-ambito-finaliza-la-ampliacion-del-deposito-de-seguridad-para-residuos-peligrosos-en-aragon" target="_blank">Ver documento</a><br>     <b>Ruta:</b> <a href="https://www.google.com/maps/dir/?api=1&origin=41.7716,-1.1203&destination=41.547,-0.934&travelmode=driving" target="_blank">Cómo llegar</a><br>     <b>Observaciones:</b> Depósito de seguridad para peligrosos; referencia regional.     </div>`)[0];
+            popup_35a7a6928ab67024e932d001d58ca6bf.setContent(html_475fd62093707bf75fdf4a1bca54c621);
+        
+
+        marker_426eeeb0a6c827bb91d3475f8da57e70.bindPopup(popup_35a7a6928ab67024e932d001d58ca6bf)
+        ;
+
+        
+    
+    
+            marker_426eeeb0a6c827bb91d3475f8da57e70.bindTooltip(
+                `<div>
+                     FCC Ámbito – Depósito seguridad / planta Aragón
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_33f3ef1aa60c1c29c0703e96247e6daf = L.marker(
+                [41.8765, -0.7884],
+                {}
+            ).addTo(map_1f97a72aeff68b2b42c095f5a36ed5f4);
+        
+    
+            var icon_9f52e401dedd3703bacf5151634bf255 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_33f3ef1aa60c1c29c0703e96247e6daf.setIcon(icon_9f52e401dedd3703bacf5151634bf255);
+        
+    
+        var popup_a3e2fdd393f666767fe7395f917a4a84 = L.popup({"maxWidth": 420});
+
+        
+            var html_5ec923cd901763f945af7d9ae597c726 = $(`<div id="html_5ec923cd901763f945af7d9ae597c726" style="width: 100.0%; height: 100.0%;">     <b>Vertedero de inertes – Zuera (referencia municipal)</b><br>     <i>RNP inertes (tierras limpias)</i><br>     <b>Municipio:</b> Zuera (Zaragoza)<br>     <b>Distancia a ZIA:</b> 29.9 km<br>     <b>Autorización/Registro:</b> Autorización vertedero (INAGA)<br>     <b>NIMA/Código:</b> <br>     <b>Documentación:</b> <a href="https://www.aragon.es/tramitador/-/tramite/autorizacion-vertederos" target="_blank">Ver documento</a><br>     <b>Ruta:</b> <a href="https://www.google.com/maps/dir/?api=1&origin=41.7716,-1.1203&destination=41.8765,-0.7884&travelmode=driving" target="_blank">Cómo llegar</a><br>     <b>Observaciones:</b> Punto de referencia; verificar admisión y condiciones INAGA.     </div>`)[0];
+            popup_a3e2fdd393f666767fe7395f917a4a84.setContent(html_5ec923cd901763f945af7d9ae597c726);
+        
+
+        marker_33f3ef1aa60c1c29c0703e96247e6daf.bindPopup(popup_a3e2fdd393f666767fe7395f917a4a84)
+        ;
+
+        
+    
+    
+            marker_33f3ef1aa60c1c29c0703e96247e6daf.bindTooltip(
+                `<div>
+                     Vertedero de inertes – Zuera (referencia municipal)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_c490553cb30c015fa04f406f0e109789 = L.marker(
+                [42.7365, -1.6416],
+                {}
+            ).addTo(map_1f97a72aeff68b2b42c095f5a36ed5f4);
+        
+    
+            var icon_094cc12c28366611e9ac5052afe8f0a5 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            );
+            marker_c490553cb30c015fa04f406f0e109789.setIcon(icon_094cc12c28366611e9ac5052afe8f0a5);
+        
+    
+        var popup_6200bd6ead21cb1df3670faa24302b8e = L.popup({"maxWidth": 420});
+
+        
+            var html_92c464eb28a7f44640c5a2f12fb8d860 = $(`<div id="html_92c464eb28a7f44640c5a2f12fb8d860" style="width: 100.0%; height: 100.0%;">     <b>Ofitas Navarra – Cantera homologada ADIF (Tipo 1, ONA00)</b><br>     <i>Cantera balasto Tipo 1 ADIF</i><br>     <b>Municipio:</b> Navarra (Noáin / entorno)<br>     <b>Distancia a ZIA:</b> 115.6 km<br>     <b>Autorización/Registro:</b> ADIF Registro productos validados – cad. 20/09/2029<br>     <b>NIMA/Código:</b> Especificación ADIF 03.360.004.0<br>     <b>Documentación:</b> <a href="https://www.adif.es/documents/20124/1929734/%C2%ABRegistro%2Bde%2Bproductos%2Bvalidados%C2%BB.pdf" target="_blank">Ver documento</a><br>     <b>Ruta:</b> <a href="https://www.google.com/maps/dir/?api=1&origin=41.7716,-1.1203&destination=42.7365,-1.6416&travelmode=driving" target="_blank">Cómo llegar</a><br>     <b>Observaciones:</b> Suministro balasto Tipo 1 (>=200 km/h).     </div>`)[0];
+            popup_6200bd6ead21cb1df3670faa24302b8e.setContent(html_92c464eb28a7f44640c5a2f12fb8d860);
+        
+
+        marker_c490553cb30c015fa04f406f0e109789.bindPopup(popup_6200bd6ead21cb1df3670faa24302b8e)
+        ;
+
+        
+    
+    
+            marker_c490553cb30c015fa04f406f0e109789.bindTooltip(
+                `<div>
+                     Ofitas Navarra – Cantera homologada ADIF (Tipo 1, ONA00)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_694b66fd37bf7986d21e3c4b88e34093 = L.marker(
+                [42.4161, -2.5506],
+                {}
+            ).addTo(map_1f97a72aeff68b2b42c095f5a36ed5f4);
+        
+    
+            var icon_78c5871a0d0fff476ccb5f9084742ad8 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            );
+            marker_694b66fd37bf7986d21e3c4b88e34093.setIcon(icon_78c5871a0d0fff476ccb5f9084742ad8);
+        
+    
+        var popup_1dd99186f0c28c39922f94fbcab74e7f = L.popup({"maxWidth": 420});
+
+        
+            var html_be4a289a1ea3a8243102b9a346805b05 = $(`<div id="html_be4a289a1ea3a8243102b9a346805b05" style="width: 100.0%; height: 100.0%;">     <b>Cantera Richinol – homologada ADIF (Tipo 1)</b><br>     <i>Cantera balasto Tipo 1 ADIF</i><br>     <b>Municipio:</b> La Rioja (entorno Navarrete)<br>     <b>Distancia a ZIA:</b> 138.1 km<br>     <b>Autorización/Registro:</b> ADIF Registro productos validados – cad. 15/04/2030<br>     <b>NIMA/Código:</b> Especificación ADIF 03.360.004.0<br>     <b>Documentación:</b> <a href="https://www.adif.es/documents/20124/1929734/%C2%ABRegistro%2Bde%2Bproductos%2Bvalidados%C2%BB.pdf" target="_blank">Ver documento</a><br>     <b>Ruta:</b> <a href="https://www.google.com/maps/dir/?api=1&origin=41.7716,-1.1203&destination=42.4161,-2.5506&travelmode=driving" target="_blank">Cómo llegar</a><br>     <b>Observaciones:</b> Alternativa válida por proximidad al valle del Ebro.     </div>`)[0];
+            popup_1dd99186f0c28c39922f94fbcab74e7f.setContent(html_be4a289a1ea3a8243102b9a346805b05);
+        
+
+        marker_694b66fd37bf7986d21e3c4b88e34093.bindPopup(popup_1dd99186f0c28c39922f94fbcab74e7f)
+        ;
+
+        
+    
+    
+            marker_694b66fd37bf7986d21e3c4b88e34093.bindTooltip(
+                `<div>
+                     Cantera Richinol – homologada ADIF (Tipo 1)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+</script>
+</html>

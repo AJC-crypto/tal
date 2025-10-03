@@ -1,0 +1,188 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Zonas de Préstamos, Canteras, Vertederos y Plantas · Alagón (v4.4)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+  <style>
+    html, body { height:100%; margin:0; }
+    #map { position:absolute; inset:0; }
+    .sidebar { position:absolute; right:10px; top:10px; bottom:10px; width:380px; background:#fff; border-radius:14px;
+               box-shadow:0 8px 30px rgba(0,0,0,.15); padding:12px; overflow:auto; font-family:system-ui, Arial;  z-index:10000;
+    .toolbar { display:flex; gap:6px; align-items:center; margin:6px 0 10px 0; flex-wrap:wrap; }
+    .btn { background:#0b57d0; color:#fff; border:none; border-radius:10px; padding:6px 10px; cursor:pointer; }
+    .btn.ghost { background:#eef2ff; color:#0b57d0; }
+    .legend { display:grid; grid-template-columns:auto 1fr; gap:6px 8px; align-items:center; font-size:12px; padding:8px; border:1px solid #e5e7eb; border-radius:10px; }
+    .dot { width:12px; height:12px; border-radius:50%; display:inline-block; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.1); }
+    .rcd { background:#1976D2; }
+    .pel { background:#C62828; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); width:12px; height:12px; }
+    .iner { background:#616161; border-radius:3px; width:12px; height:12px; }
+    .can { background:#2E7D32; width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:14px solid #2E7D32; box-shadow:none; }
+    .cards { display:grid; grid-template-columns: 1fr; gap:8px; margin-top:10px; }
+    .card { border:1px solid #e5e7eb; border-radius:12px; padding:10px; transition:.2s; font-size:13px; }
+    .card h4 { margin:0 0 4px 0; font-size:14px; }
+    .card .meta { font-size:11px; color:#6b7280; margin-bottom:6px; }
+    .card.active { border-color:#0b57d0; box-shadow:0 0 0 2px rgba(11,87,208,.25); }
+    .card.dim { opacity:.35; }
+    .chips { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px; }
+    .chip { background:#f3f4f6; border:1px solid #e5e7eb; border-radius:999px; padding:2px 8px; font-size:11px; }
+    .actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .leaflet-tooltip { background:#fff; border:1px solid #e5e7eb; color:#111827; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<div class="sidebar">
+  <h3 style="margin:0 0 8px 0;">Zonas de Préstamos, Canteras, Vertederos y Plantas</h3>
+  <div class="toolbar">
+    <button class="btn" id="toggleAll">Ocultar/mostrar todo</button>
+    <button class="btn ghost" id="resetView">Reiniciar vista</button>
+    <button class="btn ghost" id="resetSel">Quitar selección</button>
+  </div>
+  <div class="legend">
+    <div><span class="dot rcd"></span></div><div>Plantas RCD / reciclaje</div>
+    <div><span class="dot pel"></span></div><div>Gestores de peligrosos</div>
+    <div><span class="dot iner"></span></div><div>Vertederos de inertes</div>
+    <div><span class="dot can" style="border: none;"></span></div><div>Canteras balasto ADIF</div>
+  </div>
+  <div class="cards" id="cards"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+<script>
+const feats = [{"type": "Feature", "properties": {"name": "Acopio Alag\u00f3n", "tipo": "Acopio de traviesas", "area_m2": 2442.6, "packs": 350, "cap_trav": 7000, "area_ocupada_m2": 1624.0, "lat": 41.77104581237169, "lon": -1.111076477864612}, "geometry": {"type": "Polygon", "coordinates": [[[-1.111912785660001, 41.77139849505134], [-1.111882568394461, 41.77137284467164], [-1.111571985220982, 41.7712186978091], [-1.110697716179929, 41.77076281370174], [-1.11065816388547, 41.7707374904633], [-1.11057446849706, 41.77069954462802], [-1.110096878430096, 41.77044030760539], [-1.110061185157648, 41.77045902366082], [-1.110639852404438, 41.77083912820474], [-1.11071151639491, 41.77089457695649], [-1.110755504450958, 41.77092178366678], [-1.110802796506699, 41.77094873285747], [-1.110822204998733, 41.77096676750033], [-1.110907738924914, 41.77101970520121], [-1.110961659735511, 41.77105603720208], [-1.111137275404868, 41.77118185481582], [-1.111299702523673, 41.77127741815707], [-1.111496705420788, 41.77138905191493], [-1.111797966678668, 41.77155011899763], [-1.111904574627047, 41.77142917168817], [-1.111912785660001, 41.77139849505134]]]}}, {"type": "Feature", "properties": {"name": "Acopio Gallur", "tipo": "Acopio de traviesas", "area_m2": 2232.4, "packs": 320, "cap_trav": 6400, "area_ocupada_m2": 1484.8, "lat": 41.86784184497722, "lon": -1.3228062607313382}, "geometry": {"type": "Polygon", "coordinates": [[[-1.323792473385818, 41.86807703363403], [-1.32386081395651, 41.86805851514632], [-1.323747822306384, 41.86802126378687], [-1.323519009133575, 41.8679578773171], [-1.323120722632645, 41.86783871970143], [-1.32298911774167, 41.86780429426651], [-1.322986088474483, 41.86780441108831], [-1.322771019721696, 41.86772673926497], [-1.322769426600571, 41.86772566946198], [-1.322558568808164, 41.86765472619635], [-1.322167704153022, 41.86750088302311], [-1.322166124997386, 41.86749981865676], [-1.322066732518569, 41.86747564999154], [-1.322049843797877, 41.8675068778754], [-1.321982170268287, 41.86760740216494], [-1.321974920142367, 41.86765037131172], [-1.321997821556292, 41.86765735107855], [-1.322096862380064, 41.86766818177195], [-1.322228142856664, 41.86767222599536], [-1.322375247145974, 41.86771629408737], [-1.322570474179273, 41.86775034558518], [-1.322828985076542, 41.8677934941309], [-1.322922586582498, 41.86780912783195], [-1.322910311778255, 41.86784800160801], [-1.322865237147637, 41.86793077912323], [-1.322865415076319, 41.86793301832792], [-1.322826640921652, 41.86801021474188], [-1.322789018938223, 41.8681127052223], [-1.322836012407409, 41.86809767772683], [-1.32292689646366, 41.86807493126717], [-1.322934390604728, 41.86807349279856], [-1.323057172144183, 41.86805290060928], [-1.323060190063278, 41.868052787029], [-1.32319670204031, 41.86803526502669], [-1.323422246940367, 41.86803033869666], [-1.323792473385818, 41.86807703363403]]]}}, {"type": "Feature", "properties": {"name": "Acopio Alag\u00f3n", "tipo": "Acopio de traviesas", "area_m2": 788.9, "packs": 113, "cap_trav": 2260, "area_ocupada_m2": 524.3, "lat": 41.77190898215748, "lon": -1.1125717209239634}, "geometry": {"type": "Polygon", "coordinates": [[[-1.11292161430863, 41.77207581141159], [-1.11293663773818, 41.77205319630441], [-1.112935877492593, 41.77201614977491], [-1.112844471125528, 41.77196802927919], [-1.112636377203784, 41.77186322676072], [-1.112633959436857, 41.7718618773613], [-1.112452072735747, 41.77178017437765], [-1.112437536500162, 41.77179463265513], [-1.112386124398316, 41.77179699131583], [-1.112205896509822, 41.77171348884016], [-1.112188335281371, 41.77173469449087], [-1.112164906097548, 41.77175815192987], [-1.112209183368887, 41.7717855443636], [-1.112274694100367, 41.77182187413981], [-1.11235975567658, 41.77186098396407], [-1.112387609928195, 41.77188210213605], [-1.112532643811028, 41.77195181441777], [-1.112733526062771, 41.77205265233857], [-1.112919837940947, 41.77212250190145], [-1.112923465377288, 41.77211891613226], [-1.11292161430863, 41.77207581141159]]]}}, {"type": "Feature", "properties": {"name": "ACOPIO Cortes de Navarra", "tipo": "Acopio de traviesas", "area_m2": 770.3, "packs": 110, "cap_trav": 2200, "area_ocupada_m2": 510.4, "lat": 41.91550123476501, "lon": -1.4205945893509568}, "geometry": {"type": "Polygon", "coordinates": [[[-1.420905305157329, 41.91563285096064], [-1.420874591395156, 41.91560228083514], [-1.42080886716245, 41.91556026614364], [-1.420703334429307, 41.91549825268858], [-1.42048646862856, 41.91537331683829], [-1.420360363643955, 41.91530358602392], [-1.420295949812177, 41.91535269855312], [-1.420231238829714, 41.9154178225718], [-1.420292027157126, 41.91545125487929], [-1.420421504620237, 41.9155152830831], [-1.420850116218141, 41.91567435364203], [-1.420905305157329, 41.91563285096064]]]}}, {"type": "Feature", "properties": {"name": "ACOPIO 2 Cortes de Navarra", "tipo": "Acopio de traviesas", "area_m2": 676.7, "packs": 97, "cap_trav": 1940, "area_ocupada_m2": 450.1, "lat": 41.91513730714227, "lon": -1.4200296943549062}, "geometry": {"type": "Polygon", "coordinates": [[[-1.420286531238846, 41.9153495724157], [-1.420366215973956, 41.91529378326371], [-1.42030076439457, 41.91525204405406], [-1.420018150434845, 41.91508512416914], [-1.419508923401025, 41.91477885486645], [-1.419471858373248, 41.91482375454488], [-1.419998579783915, 41.91516575140847], [-1.420286531238846, 41.9153495724157]]]}}];
+const traza = [[41.72166149658805, -1.018006392621027], [41.72469003678029, -1.023725309965535], [41.72741660058755, -1.029062520795008], [41.73453201455279, -1.042458905497005], [41.74555668299559, -1.063158862607129], [41.75522463755783, -1.081495230500326], [41.75893864037521, -1.088571327983426], [41.76926834916043, -1.108174266100155], [41.77290888135837, -1.115022413588166], [41.7742482528141, -1.117979054363305], [41.77503532381966, -1.120636766711972], [41.77543112575598, -1.123534605593817], [41.7756491449603, -1.128853038101372], [41.77601597380666, -1.13869518965885], [41.77679548581992, -1.144253810476676], [41.77845782531995, -1.148803439932741], [41.78228501225311, -1.156326250876534], [41.78231410110581, -1.156114708124378], [41.78232105691004, -1.156061303954132], [41.79347720806604, -1.178485754284929], [41.80786302625006, -1.207319732367406], [41.82658995966, -1.245081197814065], [41.84773520028094, -1.287085523693955], [41.85824407515501, -1.308200341605341], [41.86080371356725, -1.312342550810109], [41.86250048925584, -1.315111044446889], [41.86638727062171, -1.319958523889838], [41.86862771191278, -1.326193703889652], [41.87099050742872, -1.335357203150451], [41.87372006310508, -1.346819780019203], [41.87576955933898, -1.351323735941492], [41.87983991136282, -1.355715376531577], [41.88446813769541, -1.361873712004699], [41.88603307465723, -1.36412352570217], [41.88874247361179, -1.37116877856858], [41.89038678431568, -1.375309589627629], [41.89188154981655, -1.379631491268498], [41.89410542360649, -1.385144892893854], [41.89778451461226, -1.392174282912298], [41.9005309531566, -1.396488288646529], [41.9057604075461, -1.404881134983502]];
+const inicio = [41.72166149658805, -1.018006392621027];
+const fin = [41.9057604075461, -1.404881134983502];
+const ZIA = [41.7716, -1.1203];
+const gestores = [{"cat": "RCD", "name": "Aragón Recicla – Planta RCD Zaragoza (La Cartuja)", "muni": "Zaragoza (La Cartuja)", "lat": 41.597, "lon": -0.844, "reg": "Planta de RCD (valorización de RCD, áridos reciclados)", "nima": "", "doc": "#"}, {"cat": "RCD", "name": "Arapel RCD (La Puebla de Alfindén)", "muni": "La Puebla de Alfindén (Zgz)", "lat": 41.633, "lon": -0.764, "reg": "Planta autorizada para RCD e inertes", "nima": "", "doc": "#"}, {"cat": "RCD", "name": "Planta RCD Ejea de los Caballeros", "muni": "Ejea de los Caballeros (Zgz)", "lat": 42.124, "lon": -1.137, "reg": "Planta de tratamiento de RCD", "nima": "", "doc": "#"}, {"cat": "RCD", "name": "Planta RCD Tauste – Tomás Arrieta, S.L.", "muni": "Tauste (Zgz)", "lat": 41.9205, "lon": -1.238, "reg": "INAGA/500301/01/2023/9745 (EIA simplificada)", "nima": "", "doc": "https://www.boa.aragon.es/cgi-bin/EBOA/BRSCGI?CMD=VEROBJ&MLKOB=1395952301010"}, {"cat": "RCD", "name": "Grupo Blesa – Gestión RCD Zaragoza", "muni": "Zaragoza", "lat": 41.67, "lon": -0.861, "reg": "Gestor RCD / áridos reciclados", "nima": "", "doc": "https://www.grupoblesa.es/rcds"}, {"cat": "PEL", "name": "FCC Ámbito Aragón (Malpica/Cadrete)", "muni": "Zaragoza/Cadrete", "lat": 41.547, "lon": -0.934, "reg": "Gestor de peligrosos / Depósito de seguridad", "nima": "", "doc": "https://www.fccambito.com/-/fcc-ambito-finaliza-la-ampliacion-del-deposito-de-seguridad-para-residuos-peligrosos-en-aragon"}, {"cat": "PEL", "name": "Tradebe Zaragoza", "muni": "Zaragoza", "lat": 41.695, "lon": -0.821, "reg": "Gestor de residuos peligrosos", "nima": "", "doc": "#"}, {"cat": "PEL", "name": "Urbaser – Zaragoza", "muni": "Zaragoza", "lat": 41.615, "lon": -0.905, "reg": "Gestor de peligrosos/no peligrosos", "nima": "", "doc": "#"}, {"cat": "PEL", "name": "ACTECO Zaragoza", "muni": "Zaragoza (50197)", "lat": 41.6296, "lon": -0.9478, "reg": "Instalación autorizada (RPGR Aragón)", "nima": "NIMA 5000056243", "doc": "https://www.acteco.es/gestion-residuos-peligrosos-zaragoza/"}, {"cat": "INER", "name": "Vertedero de inertes – Zuera", "muni": "Zuera (Zgz)", "lat": 41.8765, "lon": -0.7884, "reg": "Vertedero de inertes (tierra limpia)", "nima": "", "doc": "https://www.aragon.es/tramitador/-/tramite/autorizacion-vertederos"}, {"cat": "INER", "name": "Vertedero de inertes – Cadrete", "muni": "Cadrete (Zgz)", "lat": 41.546, "lon": -0.957, "reg": "Vertedero de inertes (tierra limpia)", "nima": "", "doc": "#"}, {"cat": "CAN", "name": "Ofitas Navarra – ONA00 (ADIF Tipo 1)", "muni": "Navarra", "lat": 42.7365, "lon": -1.6416, "reg": "Cantera balasto ADIF Tipo 1 (vig. hasta 20/09/2029)", "nima": "Esp. 03.360.004.0", "doc": "https://www.adif.es/documents/20124/1929734/%C2%ABRegistro%2Bde%2Bproductos%2Bvalidados%C2%BB.pdf"}, {"cat": "CAN", "name": "Cantera Richinol (ADIF Tipo 1)", "muni": "La Rioja", "lat": 42.4161, "lon": -2.5506, "reg": "Cantera balasto ADIF Tipo 1", "nima": "Esp. 03.360.004.0", "doc": "https://www.adif.es/documents/20124/1929734/%C2%ABRegistro%2Bde%2Bproductos%2Bvalidados%C2%BB.pdf"}, {"cat": "CAN", "name": "Cantera de Grisaleña (ADIF Tipo 1)", "muni": "Burgos (Valle del Ebro)", "lat": 42.509, "lon": -3.246, "reg": "Cantera balasto ADIF Tipo 1", "nima": "Esp. 03.360.004.0", "doc": "https://www.adif.es/"}, {"cat": "CAN", "name": "Cantera de Oropesa (ADIF Tipo 1)", "muni": "Castellón", "lat": 40.09, "lon": 0.142, "reg": "Cantera balasto ADIF Tipo 1", "nima": "Esp. 03.360.004.0", "doc": "https://www.adif.es/"}, {"cat": "CAN", "name": "Sierra Carrascoy (ADIF Tipo 1)", "muni": "Murcia", "lat": 37.884, "lon": -1.111, "reg": "Cantera balasto ADIF Tipo 1", "nima": "Esp. 03.360.004.0", "doc": "https://www.adif.es/"}];
+
+const map = L.map('map', { zoomControl:true });
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(map);
+
+// Traza y extremos
+const trazaLayer = L.polyline(traza, { color:'#0B57D0', weight:4 }).addTo(map);
+L.marker(inicio).bindTooltip('Inicio', {permanent:true, direction:'top', offset:[0,-10], opacity:.9}).addTo(map);
+L.marker(fin).bindTooltip('Fin', {permanent:true, direction:'top', offset:[0,-10], opacity:.9}).addTo(map);
+let bounds = trazaLayer.getBounds();
+
+// ZIA
+L.marker(ZIA, {icon: L.divIcon({className:'', html:'<div class="dot rcd" style="background:#0B57D0;"></div>'})})
+  .addTo(map).bindTooltip('ZIA (Almacén de residuos)', {permanent:true, direction:'top', offset:[0,-10], opacity:.9});
+
+// Routing
+let routing = null;
+function clearRoute(){ if(routing) { map.removeControl(routing); routing=null; } }
+function routeFrom(origin, dest) {
+  clearRoute();
+  routing = L.Routing.control({
+    waypoints: [ L.latLng(origin[0], origin[1]), L.latLng(dest[0], dest[1]) ],
+    addWaypoints: false, draggableWaypoints: false, fitSelectedRoutes: true, show: false,
+    lineOptions: { addWaypoints:false, styles:[{color:'#111827', weight:6, opacity:.6}, {color:'#00A1FF', weight:4, opacity:.9}] }
+  }).addTo(map);
+}
+
+function km(a,b){
+  const toR=Math.PI/180, R=6371;
+  const dlat=(b[0]-a[0])*toR, dlon=(b[1]-a[1])*toR;
+  const s=Math.sin(dlat/2)**2 + Math.cos(a[0]*toR)*Math.cos(b[0]*toR)*Math.sin(dlon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));
+}
+function gmaps(origin, dest){
+  return 'https://www.google.com/maps/dir/?api=1&origin='+origin[0]+','+origin[1]+'&destination='+dest[0]+','+dest[1]+'&travelmode=driving';
+}
+function catText(cat){
+  return ({"RCD":"Planta de RCD / reciclaje","PEL":"Gestor de residuos peligrosos","INER":"Vertedero de inertes (tierra limpia)","CAN":"Cantera de balasto ADIF"})[cat]||cat;
+}
+function iconFor(cat,name){
+  if(cat==='RCD') return L.divIcon({className:'', html:'<div class="dot rcd" title="'+name+'"></div>'});
+  if(cat==='PEL') return L.divIcon({className:'', html:'<div class="dot pel" title="'+name+'"></div>'});
+  if(cat==='INER') return L.divIcon({className:'', html:'<div class="dot iner" title="'+name+'"></div>'});
+  if(cat==='CAN') return L.divIcon({className:'', html:'<div class="dot can" style="box-shadow:0 0 0 1px rgba(0,0,0,.25)" title="'+name+'"></div>'});
+  return L.divIcon({className:'', html:'<div class="dot" title="'+name+'"></div>'});
+}
+
+const groups = { RCD: L.layerGroup().addTo(map), PEL: L.layerGroup().addTo(map), INER: L.layerGroup().addTo(map), CAN: L.layerGroup().addTo(map) };
+const cardsEl = document.getElementById('cards');
+let markers = [];
+let selectedId = null;
+
+function renderCards(list){
+  cardsEl.innerHTML = '';
+  list.forEach((g,i) => {
+    const card = document.createElement('div');
+    card.className='card';
+    card.id='card-'+i;
+    const dist = km(ZIA,[g.lat,g.lon]).toFixed(2);
+    card.innerHTML = `
+      <h4>${g.name}</h4>
+      <div class="chips"><span class="chip">${catText(g.cat)}</span><span class="chip">${g.muni}</span></div>
+      <div class="meta">Distancia a ZIA: ${dist} km</div>
+      ${ g.nima ? `<div class="meta"><b>NIMA:</b> ${g.nima}</div>` : '' }
+      ${ g.reg ? `<div>${g.reg}</div>` : '' }
+      <div class="actions">
+        <button class="btn ghost" onclick="selectItem(${i}, true)">Ver en mapa</button>
+        <a class="btn" href="${gmaps(ZIA, [g.lat,g.lon])}" target="_blank">Abrir ruta</a>
+        ${ g.doc && g.doc!=='#' ? `<a class="btn ghost" href="${g.doc}" target="_blank">Documentación</a>` : '' }
+      </div>`;
+    cardsEl.appendChild(card);
+  });
+}
+
+function addMarkers(){
+  Object.values(groups).forEach(gr => gr.clearLayers());
+  markers = gestores.map((g,i) => {
+    const m = L.marker([g.lat,g.lon], { icon: iconFor(g.cat, g.name) })
+      .bindTooltip(g.name, {permanent:true, direction:'top', offset:[0,-10], opacity:.9})
+      .on('click', () => selectItem(i, false));
+    groups[g.cat].addLayer(m);
+    if(bounds) bounds.extend(m.getLatLng());
+    return m;
+  });
+}
+
+function selectItem(i, fromCard){
+  selectedId = i;
+  const g = gestores[i];
+  document.querySelectorAll('.card').forEach((el,idx)=>{
+    el.classList.toggle('active', idx===i);
+    el.classList.toggle('dim', idx!==i);
+  });
+  const popup = "<b>"+g.name+"</b><br>"+
+    "<i>"+catText(g.cat)+"</i><br>"+
+    "<b>Municipio:</b> "+g.muni+"<br>"+
+    (g.nima? "<b>NIMA:</b> "+g.nima+"<br>": "")+
+    (g.reg? "<b>Registro:</b> "+g.reg+"<br>": "")+
+    "<b>Distancia a ZIA:</b> "+km(ZIA,[g.lat,g.lon]).toFixed(2)+" km<br>"+
+    '<a href="'+gmaps(ZIA, [g.lat,g.lon])+'" target="_blank">Abrir ruta en Google Maps</a>' +
+    (g.doc && g.doc!=="#"? '<br><a href="'+g.doc+'" target="_blank">Certificados / Acreditaciones</a>':'');
+  markers[i].bindPopup(popup, {maxWidth: 340}).openPopup();
+  routeFrom(ZIA, [g.lat,g.lon]); // Siempre dibujamos la ruta al seleccionar
+}
+
+function resetSelection(){
+  selectedId = null;
+  document.querySelectorAll('.card').forEach(el=> el.classList.remove('active','dim'));
+  clearRoute();
+  map.closePopup();
+}
+
+document.getElementById('toggleAll').onclick = () => {
+  const visible = map.hasLayer(groups.RCD) || map.hasLayer(groups.PEL) || map.hasLayer(groups.INER) || map.hasLayer(groups.CAN);
+  Object.values(groups).forEach(gr => visible ? map.removeLayer(gr) : gr.addTo(map));
+};
+document.getElementById('resetView').onclick = () => { map.fitBounds(bounds.pad(0.2)); };
+document.getElementById('resetSel').onclick = resetSelection;
+
+// Reset al hacer click en mapa
+// Init
+addMarkers();
+renderCards(gestores);
+map.fitBounds(bounds.pad(0.2));
+</script>
+</body>
+</html>
